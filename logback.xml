@@ -1,0 +1,59 @@
+<configuration scan="true" scanPeriod="1 seconds" debug="true">
+        <!-- 属性设置 -->
+        <property name="LOG_PATH" value="./INFO_LOG"/>
+        <property name="ERR_PATH" value="./ERR_LOG"/>
+        <property name="logMaxHistory" value="300"/>
+        <!-- 错误日志-->
+        <appender name="ERROR-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ERR_PATH}/error.log</file>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%caller] - %m%n</pattern>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${ERR_PATH}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>${logMaxHistory}</maxHistory>
+            </rollingPolicy>
+        </appender>
+        <!-- 控制台-->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%blue(%d{yyyy-MM-dd HH:mm:ss.SSS}) %cyan([%thread]) %highlight(%-5level) %boldMagenta(%logger) %-3L - %green(%msg%n)
+                </pattern>
+            </encoder>
+
+        </appender>
+        <!-- 普通日志-->
+        <appender name="FILE-THREAD" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/info.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- 按照名称归档 如果名称精确到秒就一秒一个日志文件（-mm-ss） -->
+                <fileNamePattern>${LOG_PATH}/info.%d{yyyy-MM-dd-HH}.%i.gz</fileNamePattern>
+                <!-- 设置单个文件容量  超出就归档 -->
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>1gb</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <!--日志文档保留份数-->
+                <maxHistory>${logMaxHistory}</maxHistory>
+            </rollingPolicy>
+
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} :%-3L- %msg%n</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+        //控制项目输出级别以及输出路径
+        <root level="info">
+            <appender-ref ref="FILE-THREAD"/>
+<!--            <appender-ref ref="ERROR-OUT"/>-->
+            <appender-ref ref="STDOUT"/>
+        </root>
+        //设置包输出级别以及输出路径 （优先于整个项目）
+<!--        <logger name="com.example" level="ERROR" additivity="false">-->
+<!--            <appender-ref ref="STDOUT"/>-->
+<!--        </logger>-->
+</configuration>
